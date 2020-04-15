@@ -7,7 +7,7 @@
     <groupId>com.github.daixuyang</groupId>
     <artifactId>mp-util</artifactId>
     <url>https://github.com/daixuyang/mp-util</url>
-    <version>1.0-RELEASE</version>
+    <version>1.0.5.RELEASE</version>
     <description>MyBatis Plus 条件构造器</description>
     <name>MyBatis Plus Util</name>
 
@@ -119,7 +119,20 @@
                     </execution>
                 </executions>
             </plugin>
-        </plugins>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>oss</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+
+
+</plugins>
     </build>
 
     <distributionManagement>

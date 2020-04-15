@@ -25,7 +25,7 @@ public class MpUtil {
      */
     private static Field[] getAllFields(Object object){
         Class<?> clazz = object.getClass();
-        List<Field> fieldList = new ArrayList<Field>();
+        List<Field> fieldList = new ArrayList<>();
         while (clazz != null){
             fieldList.addAll(Arrays.asList(clazz.getDeclaredFields()));
             clazz = clazz.getSuperclass();
@@ -56,6 +56,7 @@ public class MpUtil {
 
                 // 值
                 Object value = field.get(o);
+                System.out.println("字段:" + column + "\t值:" + value);
                 if (field.isAnnotationPresent(MpQuery.class)) {
                     MpQuery annotation = field.getAnnotation(MpQuery.class);
                     String type = annotation.type();
@@ -65,35 +66,49 @@ public class MpUtil {
                     //优先使用自定义字段
                     column = getField(column, annotation, value);
 
-                    if (QueryType.EQ.equals(type)) {
-                        wrapper.eq(ObjectUtils.isNotEmpty(value), column, value);
-                    } else if (QueryType.LIKE.equals(type)) {
-                        wrapper.like(ObjectUtils.isNotEmpty(value), column, value);
-                    } else if (QueryType.LIKE_LEFT.equals(type)) {
-                        wrapper.likeLeft(ObjectUtils.isNotEmpty(value), column, value);
-                    } else if (QueryType.LIKE_RIGHT.equals(type)) {
-                        wrapper.likeRight(ObjectUtils.isNotEmpty(value), column, value);
-                    } else if (QueryType.LE.equals(type)) {
-                        wrapper.le(ObjectUtils.isNotEmpty(value), column, value);
-                    } else if (QueryType.LT.equals(type)) {
-                        wrapper.lt(ObjectUtils.isNotEmpty(value), column, value);
-                    } else if (QueryType.GE.equals(type)) {
-                        wrapper.ge(ObjectUtils.isNotEmpty(value), column, value);
-                    } else if (QueryType.GT.equals(type)) {
-                        wrapper.gt(ObjectUtils.isNotEmpty(value), column, value);
-                    } else if (QueryType.IS_NULL.equals(type)) {
-                        wrapper.isNull(ObjectUtils.isNotEmpty(value), column);
-                    } else if (QueryType.IS_NOT_NULL.equals(type)) {
-                        wrapper.isNotNull(ObjectUtils.isNotEmpty(value), column);
-                    } else if (QueryType.IS_EMPTY.equals(type)) {
-                        wrapper.eq(column, QueryStatic.EMPTY);
-                    } else if (QueryType.IS_NOT_EMPTY.equals(type)) {
-                        wrapper.ne(column, QueryStatic.EMPTY);
+                    switch (type) {
+                        case QueryType.EQ:
+                            wrapper.eq(ObjectUtils.isNotEmpty(value), column, value);
+                            break;
+                        case QueryType.LIKE:
+                            wrapper.like(ObjectUtils.isNotEmpty(value), column, value);
+                            break;
+                        case QueryType.LIKE_LEFT:
+                            wrapper.likeLeft(ObjectUtils.isNotEmpty(value), column, value);
+                            break;
+                        case QueryType.LIKE_RIGHT:
+                            wrapper.likeRight(ObjectUtils.isNotEmpty(value), column, value);
+                            break;
+                        case QueryType.LE:
+                            wrapper.le(ObjectUtils.isNotEmpty(value), column, value);
+                            break;
+                        case QueryType.LT:
+                            wrapper.lt(ObjectUtils.isNotEmpty(value), column, value);
+                            break;
+                        case QueryType.GE:
+                            wrapper.ge(ObjectUtils.isNotEmpty(value), column, value);
+                            break;
+                        case QueryType.GT:
+                            wrapper.gt(ObjectUtils.isNotEmpty(value), column, value);
+                            break;
+                        case QueryType.IS_NULL:
+                            wrapper.isNull(ObjectUtils.isNotEmpty(value), column);
+                            break;
+                        case QueryType.IS_NOT_NULL:
+                            wrapper.isNotNull(ObjectUtils.isNotEmpty(value), column);
+                            break;
+                        case QueryType.IS_EMPTY:
+                            wrapper.eq(column, QueryStatic.EMPTY);
+                            break;
+                        case QueryType.IS_NOT_EMPTY:
+                            wrapper.ne(column, QueryStatic.EMPTY);
+                            break;
+                        default:
+                            break;
                     }
                 } else {
                     wrapper.eq(ObjectUtils.isNotEmpty(value), column, value);
                 }
-
 
             }
         } catch (IllegalAccessException e) {
