@@ -4,7 +4,7 @@
     <dependency>
         <groupId>com.github.daixuyang</groupId>
         <artifactId>mp-util</artifactId>
-        <version>1.0.5.RELEASE</version>
+        <version>1.0.8.RELEASE</version>
     </dependency>
 ```
 

@@ -7,7 +7,7 @@
     <groupId>com.github.daixuyang</groupId>
     <artifactId>mp-util</artifactId>
     <url>https://github.com/daixuyang/mp-util</url>
-    <version>1.0.5.RELEASE</version>
+    <version>1.0.8.RELEASE</version>
     <description>MyBatis Plus 条件构造器</description>
     <name>MyBatis Plus Util</name>
 
@@ -50,6 +50,8 @@
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <optional>true</optional>
         </dependency>
+
+
     </dependencies>
 
     <dependencyManagement>
@@ -59,7 +61,10 @@
                 <artifactId>mybatis-plus-boot-starter</artifactId>
                 <version>${mybatis.spring.boot.starter.version}</version>
             </dependency>
+
         </dependencies>
+
+
     </dependencyManagement>
 
     <build>

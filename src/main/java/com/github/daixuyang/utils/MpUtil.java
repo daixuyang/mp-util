@@ -11,22 +11,23 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author 小代
  */
 public class MpUtil {
 
-
     /**
      * 获取所有属性
+     *
      * @param object 对象
      * @return Field[]
      */
-    private static Field[] getAllFields(Object object){
+    private static Field[] getAllFields(Object object) {
         Class<?> clazz = object.getClass();
         List<Field> fieldList = new ArrayList<>();
-        while (clazz != null){
+        while (clazz != null) {
             fieldList.addAll(Arrays.asList(clazz.getDeclaredFields()));
             clazz = clazz.getSuperclass();
         }
@@ -35,10 +36,16 @@ public class MpUtil {
         return fields;
     }
 
+    public static QueryWrapper<Object> generateWrapper(Object o) {
+        QueryWrapper<Object> wrapper = new QueryWrapper<>();
+        generateWrapper(o, wrapper);
+        return wrapper;
+    }
+
     /**
      * 将驼峰转为对应数据库的下划线字段的查询表达式
      *
-     * @param o 实体类
+     * @param o       实体类
      * @param wrapper 条件构造器
      */
     public static void generateWrapper(Object o, QueryWrapper<Object> wrapper) {
@@ -56,15 +63,22 @@ public class MpUtil {
 
                 // 值
                 Object value = field.get(o);
-                System.out.println("字段:" + column + "\t值:" + value);
+                //默认值
+                printValue(column, value);
+                // 有注解的情况
                 if (field.isAnnotationPresent(MpQuery.class)) {
                     MpQuery annotation = field.getAnnotation(MpQuery.class);
                     String type = annotation.type();
-                    // 重新赋值数据表字段
+
+                    //优先使用自定义表前缀和字段属性
                     column = annotation.prefix() + QueryStatic.POINT + Tool.humpToLine2(field.getName());
 
                     //优先使用自定义字段
-                    column = getField(column, annotation, value);
+                    column = getField(column, annotation);
+
+                    //优先使用自定义默认值
+                    value = getDefaultValue(annotation, value);
+
 
                     switch (type) {
                         case QueryType.EQ:
@@ -100,6 +114,9 @@ public class MpUtil {
                         case QueryType.IS_EMPTY:
                             wrapper.eq(column, QueryStatic.EMPTY);
                             break;
+                        case QueryType.CUSTOMIZE:
+                            wrapper.apply(!Objects.isNull(value), String.valueOf(value));
+                            break;
                         case QueryType.IS_NOT_EMPTY:
                             wrapper.ne(column, QueryStatic.EMPTY);
                             break;
@@ -116,34 +133,37 @@ public class MpUtil {
         }
     }
 
+    private static void printValue(String column, Object value) {
+        System.out.println("字段:" + column + "\t值:" + value);
+    }
+
     /**
      * 获取自定义列
      *
      * @param column     条件要构造的列
      * @param annotation 注解
-     * @param value      当前属性的值
      * @return 条件要构造的列
      */
-    private static String getField(String column, MpQuery annotation, Object value) {
-        // 指定一个字段
+    private static String getField(String column, MpQuery annotation) {
+        // 指定的字段
         String fd = annotation.field();
         if (Strings.isNotBlank(fd)) {
             column = annotation.prefix() + QueryStatic.POINT + Tool.humpToLine2(fd);
         }
-
-        // 三目指定的字段
-        String fieldMk = annotation.fieldMk();
-        if (Strings.isNotBlank(fieldMk)) {
-            fieldMk = fieldMk.replaceAll("\\s", "");
-            // 目标状态的值
-            String val = fieldMk.split("\\?")[0];
-            // 自定义的两个字段
-            String[] fields = fieldMk.split("\\?")[1].split(QueryStatic.LOWER_COLON);
-
-            fd = value.equals(val) ? fields[0] : fields[1];
-
-            column = annotation.prefix() + QueryStatic.POINT + Tool.humpToLine2(fd);
-        }
         return column;
+    }
+
+    /**
+     * 获取注解上的默认值
+     *
+     * @param annotation 注解
+     * @param value 值
+     * @return 默认值
+     */
+    private static Object getDefaultValue(MpQuery annotation, Object value) {
+        if (Strings.isNotBlank(annotation.defaultValue())) {
+            return annotation.defaultValue();
+        }
+        return value;
     }
 }

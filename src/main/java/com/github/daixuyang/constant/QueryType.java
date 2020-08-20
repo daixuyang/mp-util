@@ -4,7 +4,6 @@ package com.github.daixuyang.constant;
  * @author 代旭杨
  */
 public interface QueryType {
-
     String EQ = "eq";
     String LIKE = "like";
     String LIKE_LEFT = "likeLeft";
@@ -30,7 +29,8 @@ public interface QueryType {
     /** 不为空 */
     String IS_NOT_EMPTY = "isNotEmpty";
 
-
+    /** 自定义SQL */
+    String CUSTOMIZE = "customize";
 
     /** 忽略字段 */
     String IGNORE = "ignore";
