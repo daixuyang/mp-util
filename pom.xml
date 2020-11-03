@@ -7,7 +7,7 @@
     <groupId>com.github.daixuyang</groupId>
     <artifactId>mp-util</artifactId>
     <url>https://github.com/daixuyang/mp-util</url>
-    <version>1.0.8.RELEASE</version>
+    <version>1.1.0.RELEASE</version>
     <description>MyBatis Plus 条件构造器</description>
     <name>MyBatis Plus Util</name>
 
@@ -18,6 +18,7 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <hutool.version>5.3.9</hutool.version>
     </properties>
 
     <licenses>
@@ -51,7 +52,11 @@
             <optional>true</optional>
         </dependency>
 
-
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -60,6 +65,12 @@
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>
                 <version>${mybatis.spring.boot.starter.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
             </dependency>
 
         </dependencies>

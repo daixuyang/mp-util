@@ -7,7 +7,6 @@ package com.github.daixuyang.constant;
  */
 public class QueryStatic {
 
-    public static final String SERIAL_VERSION_UID = "serialVersionUID";
     public static final String DEFAULT_PREFIX = "t.";
     public static final String EMPTY = "";
     public static final String POINT = ".";

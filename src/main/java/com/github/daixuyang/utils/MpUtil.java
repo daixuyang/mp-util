@@ -1,5 +1,6 @@
 package com.github.daixuyang.utils;
 
+import cn.hutool.core.util.ReflectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.github.daixuyang.annotation.MpQuery;
@@ -8,9 +9,7 @@ import com.github.daixuyang.constant.QueryType;
 import org.apache.logging.log4j.util.Strings;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.lang.reflect.Modifier;
 import java.util.Objects;
 
 /**
@@ -18,23 +17,6 @@ import java.util.Objects;
  */
 public class MpUtil {
 
-    /**
-     * 获取所有属性
-     *
-     * @param object 对象
-     * @return Field[]
-     */
-    private static Field[] getAllFields(Object object) {
-        Class<?> clazz = object.getClass();
-        List<Field> fieldList = new ArrayList<>();
-        while (clazz != null) {
-            fieldList.addAll(Arrays.asList(clazz.getDeclaredFields()));
-            clazz = clazz.getSuperclass();
-        }
-        Field[] fields = new Field[fieldList.size()];
-        fieldList.toArray(fields);
-        return fields;
-    }
 
     public static QueryWrapper<Object> generateWrapper(Object o) {
         QueryWrapper<Object> wrapper = new QueryWrapper<>();
@@ -48,13 +30,17 @@ public class MpUtil {
      * @param o       实体类
      * @param wrapper 条件构造器
      */
-    public static void generateWrapper(Object o, QueryWrapper<Object> wrapper) {
+    private static void generateWrapper(Object o, QueryWrapper<Object> wrapper) {
         try {
-            Field[] allFields = getAllFields(o);
+            Field[] allFields = ReflectUtil.getFields(o.getClass());
 
             for (Field field : allFields) {
                 field.setAccessible(true);
-                if (QueryStatic.SERIAL_VERSION_UID.equals(field.getName())) {
+                // 如果是static
+                if(Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())){
+                    continue;
+                }
+                if(!Tool.isSimpleType(field.getType())){
                     continue;
                 }
 
@@ -64,7 +50,6 @@ public class MpUtil {
                 // 值
                 Object value = field.get(o);
                 //默认值
-                printValue(column, value);
                 // 有注解的情况
                 if (field.isAnnotationPresent(MpQuery.class)) {
                     MpQuery annotation = field.getAnnotation(MpQuery.class);
@@ -76,7 +61,7 @@ public class MpUtil {
                     //优先使用自定义字段
                     column = getField(column, annotation);
 
-                    //优先使用自定义默认值
+                    //有默认值重写默认值
                     value = getDefaultValue(annotation, value);
 
 
@@ -131,10 +116,6 @@ public class MpUtil {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-    }
-
-    private static void printValue(String column, Object value) {
-        System.out.println("字段:" + column + "\t值:" + value);
     }
 
     /**
