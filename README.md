@@ -4,7 +4,7 @@
     <dependency>
         <groupId>com.github.daixuyang</groupId>
         <artifactId>mp-util</artifactId>
-        <version>1.0.8.RELEASE</version>
+        <version>1.1.1.RELEASE</version>
     </dependency>
 ```
 
@@ -17,12 +17,9 @@
     * @return 返回table列表
     */
     @Override
-    public CommonTable findList(FormCdyyTaskCletveEomic form){
-        Page<CdyyTaskCletveEomic> page = new Page<>(ServletUtils.getParameterToInt("page"), ServletUtils.getParameterToInt("limit"));
-        QueryWrapper<Object> wrapper = new QueryWrapper<>();
-        MpUtil.generateWrapper(form, wrapper);
-        List<CdyyTaskCletveEomicVo> list = cdyyTaskCletveEomicMapper.findList(page, wrapper);
-        return CommonTable.initCommonTable(0, null, page.getTotal(), list);
+    public CommonTable findList(Dto dto){
+        QueryWrapper<Object> wrapper = MpUtil.generateWrapper(dto);
+        return xxxxxMapper.findList(wrapper);
     }
 ```
 

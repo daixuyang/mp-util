@@ -5,6 +5,7 @@ package com.github.daixuyang.constant;
  */
 public interface QueryType {
     String EQ = "eq";
+    String NE = "ne";
     String LIKE = "like";
     String LIKE_LEFT = "likeLeft";
     String LIKE_RIGHT = "likeRight";

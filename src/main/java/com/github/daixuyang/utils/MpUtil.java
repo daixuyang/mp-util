@@ -16,8 +16,7 @@ import java.util.Objects;
  * @author 小代
  */
 public class MpUtil {
-
-
+    
     public static QueryWrapper<Object> generateWrapper(Object o) {
         QueryWrapper<Object> wrapper = new QueryWrapper<>();
         generateWrapper(o, wrapper);
@@ -68,6 +67,9 @@ public class MpUtil {
                     switch (type) {
                         case QueryType.EQ:
                             wrapper.eq(ObjectUtils.isNotEmpty(value), column, value);
+                            break;
+                        case QueryType.NE:
+                            wrapper.ne(ObjectUtils.isNotEmpty(value), column, value);
                             break;
                         case QueryType.LIKE:
                             wrapper.like(ObjectUtils.isNotEmpty(value), column, value);
