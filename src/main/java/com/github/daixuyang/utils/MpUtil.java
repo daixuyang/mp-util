@@ -1,8 +1,14 @@
 package com.github.daixuyang.utils;
 
 import cn.hutool.core.util.ReflectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.baomidou.mybatisplus.extension.conditions.AbstractChainWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.github.daixuyang.annotation.MpQuery;
 import com.github.daixuyang.constant.QueryStatic;
 import com.github.daixuyang.constant.QueryType;
@@ -15,8 +21,26 @@ import java.util.Objects;
 /**
  * @author 小代
  */
-public class MpUtil {
-    
+public class MpUtil <T>  extends AbstractChainWrapper<T, SFunction<T, ?>, LambdaQueryChainWrapper<T>, LambdaQueryWrapper<T>> {
+
+    /**
+     * 构建实体类selectLambda
+     * @param <T> 数据库实体类
+     * @return 条件构造器
+     */
+    public static <T> LambdaQueryWrapper<T> selectEntityWrapper() {
+        return new QueryWrapper<T>().lambda();
+    }
+
+    /**
+     * 构建实体类updateLambda
+     * @param <T> 数据库实体类
+     * @return 条件构造器
+     */
+    public static <T> LambdaUpdateWrapper<T> updateEntityWrapper() {
+        return new UpdateWrapper<T>().lambda();
+    }
+
     public static QueryWrapper<Object> generateWrapper(Object o) {
         QueryWrapper<Object> wrapper = new QueryWrapper<>();
         generateWrapper(o, wrapper);
@@ -29,16 +53,17 @@ public class MpUtil {
      * @param o       实体类
      * @param wrapper 条件构造器
      */
-    private static void generateWrapper(Object o, QueryWrapper<Object> wrapper) {
+    public static void generateWrapper(Object o, QueryWrapper<Object> wrapper) {
         try {
             Field[] allFields = ReflectUtil.getFields(o.getClass());
 
             for (Field field : allFields) {
                 field.setAccessible(true);
-                // 如果是static
+                // 过滤static属性
                 if(Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())){
                     continue;
                 }
+                // 过滤非基本类型
                 if(!Tool.isSimpleType(field.getType())){
                     continue;
                 }
